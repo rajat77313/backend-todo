@@ -2,10 +2,11 @@ const ToDo = require('../models/todo-model');
 
 const createtodo = async (req, res) => {
     try {
-        const { text } = req.body;
-        const _id = new Date().toLocaleDateString().replaceAll('/', '-')
+        console.log(req.body)
+        const { text, userId } = req.body;
+        const _id = new Intl.DateTimeFormat('en-GB').format(new Date()).replace(/\//g, '-');
         console.log(_id)
-        const todo = await ToDo.create({ date_id: _id, text, createdOn: new Date() })
+        const todo = await ToDo.create({ date_id: _id, text, createdOn: new Date(), userId  })
         res.send(`Todo Successfully added, ${todo}`)
     } catch (error) {
         console.error(error);
@@ -15,7 +16,13 @@ const createtodo = async (req, res) => {
 
 const getTodo = async (req, res) => {
     try {
-        const todos = await ToDo.find(); // Fetch all todos from the database
+        // console.log(req.query)
+        const { userId, date_id } = req.query;
+        if(!date_id) {
+            return res.status(500).json({message: "Something went wrong. Please check the date"})
+        }
+
+        const todos = await ToDo.find({date_id, userId});
         res.status(200).json({ message: "Todos fetched successfully", data: todos });
     } catch (error) {
         console.error(error);

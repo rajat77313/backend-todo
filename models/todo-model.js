@@ -14,6 +14,9 @@ const toDoSchema = mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    userId: {
+        type: String
     }
 })
 

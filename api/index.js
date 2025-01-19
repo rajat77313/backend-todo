@@ -9,7 +9,8 @@ app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
     credentials: true
-  }))
+  }));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use('/', router)
@@ -22,6 +23,4 @@ db().then(() => app.listen(PORT, (req, res) => {
 }))
 
 
-const server = require("express")(); // Create a server instance
-server.use(app); // Use the Express app
-module.exports = server;
+module.exports = app
