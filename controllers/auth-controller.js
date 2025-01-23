@@ -8,11 +8,11 @@ const getData = async (req, res) => {
 
 const createuser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password } = req.body.user;
         const userExist = await User.findOne({ email: email })
 
         if (userExist) {
-            return res.status(500).send('User already exists.')
+            return res.status(401).json({message: 'User already exists.'})
         }
         const user = await User.create({ username, email, password })
 
@@ -30,11 +30,11 @@ const createuser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body.user;
         const userExist = await User.findOne({ email: email })
-
+        console.log('userExist - ', userExist)
         if (!userExist) {
-            return res.status(500).json({ "message": 'Invalid Credentials' })
+            return res.status(401).json({ "message": 'Invalid Credentials' })
         }
         const user = await bcrypt.compare(password, userExist.password)
         if (user) {
@@ -49,7 +49,7 @@ const loginUser = async (req, res) => {
             }
             res.json({ message: 'User Logged In' })
         } else {
-            res.status(500).json({ msg: "Invalid email or password" })
+            res.status(401).json({ message: "Invalid email or password" })
         }
     } catch (error) {
         console.error(error)
@@ -57,12 +57,11 @@ const loginUser = async (req, res) => {
 }
 
 const checkUser = async (req, res) => {
-    console.log('Api called')
     const user_exists = await LoggedUser.find({})
     if (user_exists.length) {
         return res.status(200).json({ message: true, user: user_exists })
     }
-    res.status(401).json({ msg: "Unauthorized" })
+    res.status(401).json({ message: "Unauthorized" })
 }
 
 const logout = async (req, res) => {
@@ -70,7 +69,7 @@ const logout = async (req, res) => {
         const user_exists = await LoggedUser.deleteOne({})
         return res.status(200).json({ message: true })
     } catch (error) {
-        res.status(500).message({ msg: "Unable to logout" })
+        res.status(500).message({ message: "Unable to logout" })
     }
 }
 
